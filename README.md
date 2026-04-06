@@ -46,7 +46,7 @@ go tool task build
 构建所有 Linux 架构：
 
 ```bash
-go tool task build:all-arch
+go tool task build:release
 ```
 
 ### 2) 运行方式
