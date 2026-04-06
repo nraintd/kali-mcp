@@ -33,6 +33,8 @@ Kali-MCP 是一个运行在 Kali 上的 MCP server；可以接入 Claude、Copil
 
 ### 1) 本地构建
 
+> 也可以直接在 release 中下载编译好的可执行文件
+
 本项目统一使用 Task 构建。
 
 ```bash
