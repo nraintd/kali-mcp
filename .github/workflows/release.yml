@@ -1,0 +1,75 @@
+name: Release Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build release binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build binaries with Task
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'VERSION=%s\n' "${GITHUB_REF_NAME}" > VERSION.env
+          go tool task build:release
+
+      - name: Prepare release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp -f bin/kali-mcp-${GITHUB_REF_NAME}-linux-* dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kali-mcp-release-binaries
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release Assets
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: kali-mcp-release-binaries
+          merge-multiple: true
+          path: dist
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum * > checksums.txt
+
+      - name: Upload assets to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            dist/*
+          generate_release_notes: true

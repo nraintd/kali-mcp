@@ -15,11 +15,16 @@ env:
 silent: false
 
 tasks:
+  tidy:
+    desc: 依赖整理
+    cmds:
+      - go mod tidy
+
   fmt:
     desc: 代码格式化
     cmds:
       - gofmt -w cmd internal
-      
+ 
   gen:
     desc: 代码生成
     cmds:
@@ -36,6 +41,7 @@ tasks:
   prepare:
     desc: 构建前准备(代码格式化 + 代码生成 + 测试)
     cmds:
+      - task: tidy
       - task: fmt
       - task: test
         vars:
@@ -49,15 +55,12 @@ tasks:
       GOOS: '{{.TARGET_OS}}'
       GOARCH: '{{.TARGET_ARCH}}'
     cmds:
-      - task: prepare
-        vars:
-          TARGET_OS: '{{.TARGET_OS}}'
-          TARGET_ARCH: '{{.TARGET_ARCH}}'
       - go build -ldflags "{{.LDFLAGS}}" -o ./bin/{{.APP_NAME}}-{{.VERSION}}-{{.TARGET_OS}}-{{.TARGET_ARCH}} {{.MAIN_PKG}}
   
   build:all-arch:
     desc: 构建所有架构的可执行文件
-    cmds:
+    internal: true
+    deps:
       - task: build
         vars:
           TARGET_ARCH: amd64
@@ -70,6 +73,21 @@ tasks:
       - task: build
         vars:
           TARGET_ARCH: 386
+          
+  build:release:
+    desc: 构建发布版本（所有架构）
+    deps:
+      - task: build:all-arch
+
+  build:dev:
+    desc: 构建开发版本（所有架构）
+    deps:
+      - task: prepare
+        vars:
+          TARGET_OS: '{{.TARGET_OS}}'
+          TARGET_ARCH: '{{.TARGET_ARCH}}'
+    cmds:
+      - task: build:all-arch
 
   clean:
     desc: 清理构建产物

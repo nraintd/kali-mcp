@@ -142,7 +142,7 @@ docker compose up -d --build
 
 本项目采用 MIT License，详见 [LICENSE](LICENSE)。
 
-本项目包含并改编自 [MCP-Kali-Server](https://github.com/Wh0am123/MCP-Kali-Server) 的部分实现；上游项目同样采用 MIT License。相关第三方许可与版权声明见 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES)。
+本项目包含并改编自 [MCP-Kali-Server](https://github.com/Wh0am123/MCP-Kali-Server) 的实现；上游项目同样采用 MIT License。相关第三方许可与版权声明见 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES)。
 
 ## 免责声明
 
