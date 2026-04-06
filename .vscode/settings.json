@@ -1,0 +1,6 @@
+{
+  "go.toolsEnvVars": {
+    "GOOS": "linux"
+  },
+  "cSpell.words": ["buildinfo", "GOARCH", "LDFLAGS", "mcpserver"]
+}

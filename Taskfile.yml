@@ -1,0 +1,77 @@
+version: '3'
+
+dotenv: ['VERSION.env']
+
+vars:
+  APP_NAME: kali-mcp
+  MAIN_PKG: ./cmd/
+  TARGET_OS: '{{default "linux" .TARGET_OS}}'
+  TARGET_ARCH: '{{default "amd64" .TARGET_ARCH}}'
+  LDFLAGS: '-s -w -X github.com/nraintd/kali-mcp/internal/buildinfo.Version={{.VERSION}}'
+
+env:
+  CGO_ENABLED: '0'
+
+silent: false
+
+tasks:
+  fmt:
+    desc: 代码格式化
+    cmds:
+      - gofmt -w cmd internal
+      
+  gen:
+    desc: 代码生成
+    cmds:
+      - go generate ./...
+
+  test:
+    desc: 运行测试
+    env:
+      GOOS: '{{.TARGET_OS}}'
+      GOARCH: '{{.TARGET_ARCH}}'
+    cmds:
+      - go test ./...
+
+  prepare:
+    desc: 构建前准备(代码格式化 + 代码生成 + 测试)
+    cmds:
+      - task: fmt
+      - task: test
+        vars:
+          TARGET_OS: '{{.TARGET_OS}}'
+          TARGET_ARCH: '{{.TARGET_ARCH}}'
+      - task: gen
+
+  build:
+    desc: 构建
+    env:
+      GOOS: '{{.TARGET_OS}}'
+      GOARCH: '{{.TARGET_ARCH}}'
+    cmds:
+      - task: prepare
+        vars:
+          TARGET_OS: '{{.TARGET_OS}}'
+          TARGET_ARCH: '{{.TARGET_ARCH}}'
+      - go build -ldflags "{{.LDFLAGS}}" -o ./bin/{{.APP_NAME}}-{{.VERSION}}-{{.TARGET_OS}}-{{.TARGET_ARCH}} {{.MAIN_PKG}}
+  
+  build:all-arch:
+    desc: 构建所有架构的可执行文件
+    cmds:
+      - task: build
+        vars:
+          TARGET_ARCH: amd64
+      - task: build
+        vars:
+          TARGET_ARCH: arm64
+      - task: build
+        vars:
+          TARGET_ARCH: arm
+      - task: build
+        vars:
+          TARGET_ARCH: 386
+
+  clean:
+    desc: 清理构建产物
+    cmds:
+      - go clean -cache -testcache

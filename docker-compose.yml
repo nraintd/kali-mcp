@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  kali-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kali-mcp:latest
+    container_name: kali-mcp
+    environment:
+      # 可选值：sth（Streamable HTTP）或 sse（Server-Sent Events）
+      KALI_MCP_TRANSPORT: sth 
+      KALI_MCP_STREAMABLE_HTTP_ADDR: :7076
+      KALI_MCP_SSE_ADDR: :7075
+      KALI_MCP_TIMEOUT: "300"
+      KALI_MCP_DEBUG: "false"
+    ports:
+      - "7076:7076"
+      - "7075:7075"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
