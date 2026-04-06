@@ -51,22 +51,22 @@ func New(cfg config.Config, logger *slog.Logger, mcp *app.App) *Runner {
 }
 
 // Start 按配置启动服务，并在收到终止信号时进行优雅关闭。
-func (a *Runner) Start() error {
-	a.logger.Info(
+func (r *Runner) Start() error {
+	r.logger.Info(
 		logStartServer,
 		"version", buildinfo.Version,
-		"timeout_seconds", a.cfg.TimeoutSeconds,
-		"debug", a.cfg.Debug,
-		"transport", a.cfg.Transport,
-		"sse_addr", a.cfg.SSEAddr,
-		"streamable_addr", a.cfg.STHAddr,
+		"timeout_seconds", r.cfg.TimeoutSeconds,
+		"debug", r.cfg.Debug,
+		"transport", r.cfg.Transport,
+		"sse_addr", r.cfg.SSEAddr,
+		"streamable_addr", r.cfg.STHAddr,
 	)
 
-	mcpSrv := a.mcp.Server()
+	mcpSrv := r.mcp.Server()
 
-	switch a.cfg.Transport {
+	switch r.cfg.Transport {
 	case config.TransportModeSTD:
-		a.logger.Info(logTransportStdioListening)
+		r.logger.Info(logTransportStdioListening)
 		if err := server.ServeStdio(mcpSrv); err != nil {
 			return fmt.Errorf("%s: %w", logServerStoppedWithError, err)
 		}
@@ -74,7 +74,7 @@ func (a *Runner) Start() error {
 	case config.TransportModeSSE, config.TransportModeSTH:
 		// 网络传输模式的服务在之后代码中启动，并支持优雅关闭。
 	default:
-		return fmt.Errorf("%s: %s", logNoValidTransport, a.cfg.Transport)
+		return fmt.Errorf("%s: %s", logNoValidTransport, r.cfg.Transport)
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -83,28 +83,28 @@ func (a *Runner) Start() error {
 	errCh := make(chan error, 1)
 
 	var sseServer *server.SSEServer
-	if a.cfg.Transport == config.TransportModeSSE {
+	if r.cfg.Transport == config.TransportModeSSE {
 		sseServer = server.NewSSEServer(
 			mcpSrv,
 			server.WithSSEEndpoint(endpoint),
 		)
 		go func() {
-			a.logger.Info(logTransportSSEListening, "addr", a.cfg.SSEAddr, "endpoint", endpoint)
-			if err := sseServer.Start(a.cfg.SSEAddr); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			r.logger.Info(logTransportSSEListening, "addr", r.cfg.SSEAddr, "endpoint", endpoint)
+			if err := sseServer.Start(r.cfg.SSEAddr); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				errCh <- fmt.Errorf("%s: %w", errPrefixSSE, err)
 			}
 		}()
 	}
 
 	var sthServer *server.StreamableHTTPServer
-	if a.cfg.Transport == config.TransportModeSTH {
+	if r.cfg.Transport == config.TransportModeSTH {
 		sthServer = server.NewStreamableHTTPServer(
 			mcpSrv,
 			server.WithEndpointPath(endpoint),
 		)
 		go func() {
-			a.logger.Info(logTransportSTHListening, "addr", a.cfg.STHAddr, "endpoint", endpoint)
-			if err := sthServer.Start(a.cfg.STHAddr); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			r.logger.Info(logTransportSTHListening, "addr", r.cfg.STHAddr, "endpoint", endpoint)
+			if err := sthServer.Start(r.cfg.STHAddr); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				errCh <- fmt.Errorf("%s: %w", errPrefixSTH, err)
 			}
 		}()
@@ -112,10 +112,10 @@ func (a *Runner) Start() error {
 
 	select {
 	case err := <-errCh:
-		a.logger.Error(logServerStoppedWithError, "error", err)
+		r.logger.Error(logServerStoppedWithError, "error", err)
 		stop()
 	case <-ctx.Done():
-		a.logger.Info(logShutdownSignalReceived)
+		r.logger.Info(logShutdownSignalReceived)
 	}
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -123,23 +123,23 @@ func (a *Runner) Start() error {
 
 	if sseServer != nil {
 		if err := sseServer.Shutdown(shutdownCtx); err != nil && !errors.Is(err, context.Canceled) {
-			a.logger.Error(logShutdownFailedSSE, "error", err)
+			r.logger.Error(logShutdownFailedSSE, "error", err)
 		}
 	}
 
 	if sthServer != nil {
 		if err := sthServer.Shutdown(shutdownCtx); err != nil && !errors.Is(err, context.Canceled) {
-			a.logger.Error(logShutdownFailedSTH, "error", err)
+			r.logger.Error(logShutdownFailedSTH, "error", err)
 		}
 	}
 
 	select {
 	case err := <-errCh:
-		a.logger.Error(logServerShutdownError, "error", err)
+		r.logger.Error(logServerShutdownError, "error", err)
 		return err
 	default:
 	}
 
-	a.logger.Info(logTransportStopped, "transport", a.cfg.Transport)
+	r.logger.Info(logTransportStopped, "transport", r.cfg.Transport)
 	return nil
 }
