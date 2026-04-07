@@ -2,3 +2,7 @@
 /example/**
 /bin
 /bin/**
+.vscode
+.vscode/**
+.idea
+.idea/**

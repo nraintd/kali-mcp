@@ -5,7 +5,9 @@ Kali-MCP 是一个运行在 Kali 上的 MCP server；可以接入 Claude、Copil
 这个项目基本上是 [MCP-Kali-Server](https://github.com/Wh0am123/MCP-Kali-Server) 项目的 go 语言分支，是在后者基础上 Vibe Coding 开发的，二者的区别在于
 1. 本项目采用 go 编写，而原项目采用 python；理论上本项目性能更佳。
 2. 本项目只有一个程序直接运行在 kali 上并提供 MCP 服务；而原项目分为 Server 和 Client，Server 封装了 kali 的工具，并暴露出 RESTful api，由 Client 和 Server 交互，并通过 stdio 提供 MCP 服务。因为不需要维护多个程序，因此本项目个人部署起来更方便。
-3. 本项目原生支持三种 MCP 传输（stdio/sse/sth）；而原项目只提供了 stdio 传输方式。
+3. 本项目原生支持三种 MCP 传输（stdio/sse/streamableHttp）；而原项目只提供了 stdio 传输方式。
+
+> 因为是 Vibe Coding 的，目前代码质量还不是很好，不够优雅；之后有时间会重构一下；但目前功能上是完全可用的。
 
 ## 当前支持的工具
 
@@ -71,7 +73,7 @@ go tool task build:release
 ./kali-mcp -stream localhost:7076
 ```
 
-> 连接地址：http://localhost:7075/mcp
+> 连接地址：http://localhost:7076/mcp
 
 ### 3) 可选参数：
 
