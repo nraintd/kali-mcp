@@ -72,7 +72,10 @@ func Parse() (Config, error) {
 	case TransportModeSTD, TransportModeSSE, TransportModeSTH:
 		// 已是合法值，无需调整。
 	default:
-		return cfg, fmt.Errorf("%w: %q", errors.New("invalid transport mode in KALI_MCP_TRANSPORT, expected: std|sse|sth"), cfg.Transport)
+		return cfg, fmt.Errorf("%w: %q",
+			errors.New(
+				"invalid transport mode in KALI_MCP_TRANSPORT, expected: std|sse|sth"),
+			cfg.Transport)
 	}
 
 	var sseAddrArg string

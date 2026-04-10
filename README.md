@@ -8,6 +8,9 @@ Kali-MCP 是一个运行在 Kali 上的 MCP server；可以接入 Claude、Copil
 3. 本项目原生支持三种 MCP 传输（stdio/sse/streamableHttp）；而原项目只提供了 stdio 传输方式。
 
 > 因为是 Vibe Coding 的，目前代码质量还不是很好，不够优雅；之后有时间会重构一下；但目前功能上是完全可用的。
+> 目前已经做了一些重构。
+
+> 如果你有 wsl kali，或者你的 ai agent 就是在 kali 上的；那么给 ai 写个 skill 告诉它能使用哪些命令，其实是比用 kali-mcp 的效果好的。
 
 ## 当前支持的工具
 
@@ -141,6 +144,10 @@ docker compose up -d --build
 1. 如果你的 agent 和 kali-mcp 在一个机器，建议使用 stdio
 2. 如果你用的是虚拟机中的 kali，可以使用 sse/streamableHttp
 3. 非常不建议将本 MCP 直接暴露在公网：本项目包含 `execute_command` 等高权限能力，若被未授权访问，风险等同于远程命令执行。若确有远程访问需求，至少应通过内网/VPN/SSH 隧道接入，并叠加鉴权、IP 白名单与反向代理访问控制。
+
+## 贡献
+
+欢迎各种形式的贡献，包括修复 Bug、改进文档以及添加新的渗透测试工具。请参阅 [贡献指南](docs/贡献指南.md) 了解详情。
 
 ## License
 

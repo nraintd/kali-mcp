@@ -2,5 +2,14 @@
   "go.toolsEnvVars": {
     "GOOS": "linux"
   },
-  "cSpell.words": ["buildinfo", "GOARCH", "LDFLAGS", "mcpserver"]
+  "cSpell.words": [
+    "arglist",
+    "buildinfo",
+    "cmdbuilder",
+    "cmdrunner",
+    "GOARCH",
+    "invoc",
+    "LDFLAGS",
+    "mcpserver"
+  ]
 }
