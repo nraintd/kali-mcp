@@ -7,16 +7,18 @@ Kali-MCP 是一个运行在 Kali 上的 MCP server；可以接入 Claude、Copil
 2. 本项目只有一个程序直接运行在 kali 上并提供 MCP 服务；而原项目分为 Server 和 Client，Server 封装了 kali 的工具，并暴露出 RESTful api，由 Client 和 Server 交互，并通过 stdio 提供 MCP 服务。因为不需要维护多个程序，因此本项目个人部署起来更方便。
 3. 本项目原生支持三种 MCP 传输（stdio/sse/streamableHttp）；而原项目只提供了 stdio 传输方式。
 
-> 因为是 Vibe Coding 的，目前代码质量还不是很好，不够优雅；之后有时间会重构一下；但目前功能上是完全可用的。
-> 目前已经做了一些重构。
+> 因为是 Vibe Coding 的，目前代码质量还不是很好，不够优雅；之后有时间会重构一下；但目前功能上是完全可用的。  
+> 目前已经做了一些重构，不完全是 Vibe Coding 了。
 
 > 如果你有 wsl kali，或者你的 ai agent 就是在 kali 上的；那么给 ai 写个 skill 告诉它能使用哪些命令，其实是比用 kali-mcp 的效果好的。
 
+> 另外推荐一下 [hexstrike-ai](https://github.com/0x4m4/hexstrike-ai/)，这个项目比本项目和本项目的原项目都要完善和强大。
+>
+> 不过出于娱乐目的，本项目依然会继续维护和更新，不断优化调整架构、添加一些新的工具和功能；如果你也有兴趣，可以一起参与贡献。
+
 ## 当前支持的工具
 
-和原项目一样，
-
-目前内置工具包括：
+和原项目一样，目前内置工具包括：
 
 - `nmap_scan`
 - `gobuster_scan`
@@ -34,6 +36,9 @@ Kali-MCP 是一个运行在 Kali 上的 MCP server；可以接入 Claude、Copil
 
 其中 `execute_command` 是高权限能力；默认关闭，需要使用 `-allow-rce` 参数或者 `KALI_MCP_ALLOW_RCE` 环境变量开启；
 建议只在受控实验环境中开启和使用。
+
+另外，即使不开启 `execute_command` 工具，其他工具也可能通过传递危险参数组合触发隐式的命令执行；对于这一点，本项目暂时没做任何过滤或限制。
+因此，请明确一个事实：本工具的设计目标就是在完全受控的本地环境使用的；不建议在远程环境或者对安全要求较高的环境中使用。
 
 ## 快速开始
 
@@ -94,7 +99,7 @@ sudo chmod +x /usr/local/bin/kali-mcp
 先手动执行下面的命令启动 sse 服务：
 
 ```bash
-./kali-mcp -sse localhost:7075
+kali-mcp -sse localhost:7075
 ```
 
 然后在 Agent(MCP Client) 上配置好:
@@ -120,7 +125,7 @@ sudo chmod +x /usr/local/bin/kali-mcp
 先手动执行下面的命令启动 streamable http 服务：
 
 ```bash
-./kali-mcp -stream localhost:7076
+kali-mcp -stream localhost:7076
 ```
 
 然后在 Agent(MCP Client) 上配置好：
