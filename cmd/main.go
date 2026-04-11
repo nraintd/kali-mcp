@@ -38,7 +38,7 @@ func main() {
 	exec := executor.New(cfg.TimeoutSeconds)
 
 	// 创建应用实例并运行
-	if err := app.New(cfg, logger, exec).Run(); err != nil {
+	if err := app.New(cfg, exec, logger).Run(); err != nil {
 		logger.Error("app runtime stopped with error", "error", err)
 		os.Exit(1)
 	}

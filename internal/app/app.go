@@ -57,11 +57,7 @@ type App struct {
 }
 
 // New 构建并返回 App 实例。
-func New(
-	cfg config.Config,
-	logger *slog.Logger,
-	exec *executor.Executor,
-) *App {
+func New(cfg config.Config, exec *executor.Executor, logger *slog.Logger) *App {
 	s := server.NewMCPServer(
 		"kali_mcp",
 		buildinfo.Version,
@@ -70,7 +66,7 @@ func New(
 	)
 
 	toolsLogger := logger.WithGroup("tools")
-	for _, t := range tools.All(exec, toolsLogger) {
+	for _, t := range tools.All(cfg, exec, toolsLogger) {
 		logger.Info("registering tool",
 			"tool", t.Name())
 		s.AddTool(
@@ -85,11 +81,7 @@ func New(
 			})
 	}
 
-	return &App{
-		cfg:    cfg,
-		logger: logger,
-		srv:    s,
-	}
+	return &App{cfg: cfg, logger: logger, srv: s}
 }
 
 // Run 按配置启动服务，并在收到终止信号时进行优雅关闭。
@@ -98,11 +90,15 @@ func (a *App) Run() error {
 		"starting kali mcp server",
 		"version", buildinfo.Version,
 		"timeout_seconds", a.cfg.TimeoutSeconds,
+		"allow_rce", a.cfg.AllowRCE,
 		"debug", a.cfg.Debug,
 		"transport", a.cfg.Transport,
 		"sse_addr", a.cfg.SSEAddr,
 		"streamable_addr", a.cfg.STHAddr,
 	)
+	if a.cfg.AllowRCE {
+		a.logger.Warn("RCE is enabled! This is dangerous and should only be used in controlled environments.")
+	}
 
 	switch a.cfg.Transport {
 	case config.TransportModeSTD:

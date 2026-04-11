@@ -24,6 +24,7 @@ const (
 	envTransport      = "KALI_MCP_TRANSPORT"
 	envSSEAddr        = "KALI_MCP_SSE_ADDR"
 	envSTHAddr        = "KALI_MCP_STREAMABLE_HTTP_ADDR"
+	envAllowRCE       = "KALI_MCP_ALLOW_RCE"
 
 	// 命令行参数常量。
 	flagSSETransport = "sse"
@@ -31,6 +32,7 @@ const (
 	flagVersion      = "v"
 	flagTimeout      = "timeout"
 	flagDebug        = "debug"
+	flagAllowRCE     = "allow-rce"
 
 	// defaultSSEAddr 为 SSE 传输默认监听地址。
 	defaultSSEAddr = ":7075"
@@ -51,6 +53,7 @@ type Config struct {
 	Transport      string
 	SSEAddr        string
 	STHAddr        string
+	AllowRCE       bool
 }
 
 // Parse 解析配置。
@@ -65,6 +68,7 @@ func Parse() (Config, error) {
 		Transport:      stringEnv(envTransport, TransportModeSTD),
 		SSEAddr:        stringEnv(envSSEAddr, defaultSSEAddr),
 		STHAddr:        stringEnv(envSTHAddr, defaultStreamableHTTPAddr),
+		AllowRCE:       boolEnv(envAllowRCE, false),
 	}
 
 	// 验证环境变量设置的 Transport 字段合法性。
@@ -86,6 +90,7 @@ func Parse() (Config, error) {
 	flag.BoolVar(&showVersion, flagVersion, false, "print version and exit")
 	flag.IntVar(&cfg.TimeoutSeconds, flagTimeout, cfg.TimeoutSeconds, "command timeout in seconds")
 	flag.BoolVar(&cfg.Debug, flagDebug, cfg.Debug, "enable debug logging")
+	flag.BoolVar(&cfg.AllowRCE, flagAllowRCE, cfg.AllowRCE, "enable remote cmd execution (RCE) features")
 	flag.Parse()
 
 	if showVersion {

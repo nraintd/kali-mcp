@@ -10,13 +10,19 @@ services:
     environment:
       # 可选值：sth（Streamable HTTP）或 sse（Server-Sent Events）
       KALI_MCP_TRANSPORT: sth 
-      KALI_MCP_STREAMABLE_HTTP_ADDR: :7076
+      # sse 模式监听的地址
       KALI_MCP_SSE_ADDR: :7075
+      # sth 模式监听的地址
+      KALI_MCP_STREAMABLE_HTTP_ADDR: :7076
+      # 命令执行超时时间，单位为秒
       KALI_MCP_TIMEOUT: "300"
+      # 是否开启调试模式，开启后会输出更多的日志信息(目前没做)
       KALI_MCP_DEBUG: "false"
+      # 是否开启任意命令执行功能，控制是否启用 execute_command 工具
+      KALI_MCP_ALLOW_RCE: "false"
     ports:
-      - "7076:7076"
       - "7075:7075"
+      - "7076:7076"
     cap_add:
       - NET_ADMIN
       - NET_RAW
