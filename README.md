@@ -94,7 +94,7 @@ sudo chmod +x /usr/local/bin/kali-mcp
 先手动执行下面的命令启动 sse 服务：
 
 ```bash
-./kali-mcp -sse localhost:7075
+kali-mcp -sse localhost:7075
 ```
 
 然后在 Agent(MCP Client) 上配置好:
@@ -120,7 +120,7 @@ sudo chmod +x /usr/local/bin/kali-mcp
 先手动执行下面的命令启动 streamable http 服务：
 
 ```bash
-./kali-mcp -stream localhost:7076
+kali-mcp -stream localhost:7076
 ```
 
 然后在 Agent(MCP Client) 上配置好：
