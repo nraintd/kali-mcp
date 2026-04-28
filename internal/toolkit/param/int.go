@@ -33,7 +33,7 @@ func (i *IntParam) NotNegative() *IntParam {
 
 // 非负校验，自定义错误
 func (i *IntParam) NotNegativeWithError(err error) *IntParam {
-	return i.GtWithError(0, err)
+	return i.GteWithError(0, err)
 }
 
 // 大于
@@ -42,14 +42,28 @@ func (i *IntParam) Gt(v int) *IntParam {
 }
 
 // 大于，自定义错误
-func (i *IntParam) GtWithError(v int, err error) *IntParam {
-	if i.ps.err != nil {
-		return i
-	}
-	if i.v <= v {
-		i.ps.err = err
-	}
-	return i
+func (i *IntParam) GtWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v <= compare {
+			return err
+		}
+		return nil
+	})
+}
+
+// 大于等于
+func (i *IntParam) Gte(v int) *IntParam {
+	return i.GteWithError(v, fmt.Errorf("'%s' parameter must be greater than or equal to %d", i.k, v))
+}
+
+// 大于等于，自定义错误
+func (i *IntParam) GteWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v < compare {
+			return err
+		}
+		return nil
+	})
 }
 
 // 小于
@@ -58,14 +72,28 @@ func (i *IntParam) Lt(v int) *IntParam {
 }
 
 // 小于，自定义错误
-func (i *IntParam) LtWithError(v int, err error) *IntParam {
-	if i.ps.err != nil {
-		return i
-	}
-	if i.v >= v {
-		i.ps.err = err
-	}
-	return i
+func (i *IntParam) LtWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v >= compare {
+			return err
+		}
+		return nil
+	})
+}
+
+// 小于等于
+func (i *IntParam) Lte(v int) *IntParam {
+	return i.LteWithError(v, fmt.Errorf("'%s' parameter must be less than or equal to %d", i.k, v))
+}
+
+// 小于等于，自定义错误
+func (i *IntParam) LteWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v > compare {
+			return err
+		}
+		return nil
+	})
 }
 
 // 等于
@@ -74,14 +102,13 @@ func (i *IntParam) Eq(v int) *IntParam {
 }
 
 // 等于，自定义错误
-func (i *IntParam) EqWithError(v int, err error) *IntParam {
-	if i.ps.err != nil {
-		return i
-	}
-	if i.v != v {
-		i.ps.err = err
-	}
-	return i
+func (i *IntParam) EqWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v != compare {
+			return err
+		}
+		return nil
+	})
 }
 
 // 不等于
@@ -90,34 +117,33 @@ func (i *IntParam) NotEq(v int) *IntParam {
 }
 
 // 不等于，自定义错误
-func (i *IntParam) NotEqWithError(v int, err error) *IntParam {
-	if i.ps.err != nil {
-		return i
-	}
-	if i.v == v {
-		i.ps.err = err
-	}
-	return i
+func (i *IntParam) NotEqWithError(compare int, err error) *IntParam {
+	return i.Validate(func(v int, k string) error {
+		if v == compare {
+			return err
+		}
+		return nil
+	})
 }
 
 // 验证器
 func (i *IntParam) Validate(f func(v int, k string) error) *IntParam {
-	return i.Custom(func(v int, k string) (int, error) {
-		return i.v, f(v, k)
+	return i.Process(func(v int, k string) (int, error) {
+		return v, f(v, k)
 	})
 }
 
 // 自定义处理函数
-func (i *IntParam) Custom(f func(v int, k string) (int, error)) *IntParam {
+func (i *IntParam) Process(f func(v int, k string) (int, error)) *IntParam {
 	if i.ps.err != nil {
 		return i
 	}
-	vv, err := f(i.v, i.k)
+	v, err := f(i.v, i.k)
 	if err != nil {
 		i.ps.err = err
 		return i
 	}
-	i.v = vv
+	i.v = v
 	return i
 }
 

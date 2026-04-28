@@ -37,10 +37,10 @@ func (n *Nmap) Options() []mcp.ToolOption {
 func (n *Nmap) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	target := ps.String("target", "").TrimSpace().NotEmpty().Parse()
-	scanType := ps.String("scan_type", "-sS").TrimSpace().NotEmpty().Parse()
-	ports := ps.String("ports", "").TrimSpace().Parse()
-	additionalArgs := ps.String("additional_args", "-T4 -Pn").TrimSpace().Parse()
+	target := ps.String("target", "").Trim().NotEmpty().Parse()
+	scanType := ps.String("scan_type", "-sS").Trim().NotEmpty().Parse()
+	ports := ps.String("ports", "").Trim().Parse()
+	additionalArgs := ps.String("additional_args", "-T4 -Pn").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		n.logger.Error("invalid parameters for nmap scan",

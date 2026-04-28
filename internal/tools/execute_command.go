@@ -33,7 +33,7 @@ func (e *ExecuteCommand) Options() []mcp.ToolOption {
 func (e *ExecuteCommand) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	command := ps.String("command", "").TrimSpace().NotEmpty().Parse()
+	command := ps.String("command", "").Trim().NotEmpty().Parse()
 	if err := ps.Err(); err != nil {
 		e.logger.Error("invalid parameters for execute_command",
 			"error", err)

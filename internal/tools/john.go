@@ -37,11 +37,11 @@ func (j *John) Options() []mcp.ToolOption {
 func (j *John) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	hashFile := ps.String("hash_file", "").TrimSpace().NotEmpty().Parse()
+	hashFile := ps.String("hash_file", "").Trim().NotEmpty().Parse()
 	wordlist := ps.String("wordlist",
-		"/usr/share/wordlists/rockyou.txt").TrimSpace().Parse()
-	formatType := ps.String("format_type", "").TrimSpace().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+		"/usr/share/wordlists/rockyou.txt").Trim().Parse()
+	formatType := ps.String("format_type", "").Trim().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		j.logger.Error("invalid parameters for john crack",

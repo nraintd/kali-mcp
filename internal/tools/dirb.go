@@ -36,10 +36,10 @@ func (d *Dirb) Options() []mcp.ToolOption {
 func (d *Dirb) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	url := ps.String("url", "").TrimSpace().NotEmpty().Parse()
+	url := ps.String("url", "").Trim().NotEmpty().Parse()
 	wordlist := ps.String("wordlist",
-		"/usr/share/wordlists/dirb/common.txt").TrimSpace().NotEmpty().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+		"/usr/share/wordlists/dirb/common.txt").Trim().NotEmpty().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		d.logger.Error("invalid parameters for dirb scan",

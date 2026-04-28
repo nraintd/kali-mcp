@@ -35,8 +35,8 @@ func (e *Enum4Linux) Options() []mcp.ToolOption {
 func (e *Enum4Linux) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	target := ps.String("target", "").TrimSpace().NotEmpty().Parse()
-	additionalArgs := ps.String("additional_args", "-a").TrimSpace().Parse()
+	target := ps.String("target", "").Trim().NotEmpty().Parse()
+	additionalArgs := ps.String("additional_args", "-a").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		e.logger.Error("invalid parameters for enum4linux scan",

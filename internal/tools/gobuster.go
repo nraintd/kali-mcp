@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -29,7 +28,8 @@ func (g *Gobuster) Options() []mcp.ToolOption {
 	return []mcp.ToolOption{
 		mcp.WithDescription("Run Gobuster to discover directories, DNS records, fuzz paths, or vhosts."),
 		mcp.WithString("url", mcp.Required()),
-		mcp.WithString("mode", mcp.DefaultString("dir")),
+		mcp.WithString("mode",
+			mcp.DefaultString("dir"), mcp.Enum("dir", "dns", "fuzz", "vhost")),
 		mcp.WithString("wordlist", mcp.DefaultString("/usr/share/wordlists/dirb/common.txt")),
 		mcp.WithString("additional_args", mcp.DefaultString("")),
 	}
@@ -38,20 +38,12 @@ func (g *Gobuster) Options() []mcp.ToolOption {
 func (g *Gobuster) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	url := ps.String("url", "").TrimSpace().NotEmpty().Parse()
-	mode := ps.String("mode", "dir").TrimSpace().NotEmpty().
-		Validate(func(mode, k string) error {
-			switch mode {
-			case "dir", "dns", "fuzz", "vhost":
-				return nil
-			default:
-				return fmt.Errorf(
-					"invalid mode: %s. must be one of: dir, dns, fuzz, vhost", mode)
-			}
-		}).Parse()
+	url := ps.String("url", "").Trim().NotEmpty().Parse()
+	mode := ps.String("mode", "dir").Trim().NotEmpty().
+		In("dir", "dns", "fuzz", "vhost").Parse()
 	wordlist := ps.String("wordlist",
-		"/usr/share/wordlists/dirb/common.txt").TrimSpace().NotEmpty().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+		"/usr/share/wordlists/dirb/common.txt").Trim().NotEmpty().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		g.logger.Error("invalid parameters for gobuster scan",

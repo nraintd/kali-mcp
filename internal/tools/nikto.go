@@ -35,8 +35,8 @@ func (n *Nikto) Options() []mcp.ToolOption {
 func (n *Nikto) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	target := ps.String("target", "").TrimSpace().NotEmpty().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+	target := ps.String("target", "").Trim().NotEmpty().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		n.logger.Error("invalid parameters for nikto scan",

@@ -18,20 +18,33 @@ func NewObjectParam(key string, value map[string]any, ps *Params) *ObjectParam {
 	}
 }
 
-func (o *ObjectParam) Required() *ObjectParam {
+func (o *ObjectParam) NotNull() *ObjectParam {
 	if o.v == nil {
 		o.ps.err = fmt.Errorf("'%s' parameter cannot be null", o.k)
 	}
 	return o
 }
 
-func (o *ObjectParam) Validate(f func(v map[string]any, k string) error) *ObjectParam {
+func (o *ObjectParam) Validate(
+	f func(v map[string]any, k string) error,
+) *ObjectParam {
+	return o.Process(func(v map[string]any, k string) (map[string]any, error) {
+		return v, f(v, k)
+	})
+}
+
+func (o *ObjectParam) Process(
+	f func(v map[string]any, k string) (map[string]any, error),
+) *ObjectParam {
 	if o.ps.err != nil {
 		return o
 	}
-	if err := f(o.v, o.k); err != nil {
+	v, err := f(o.v, o.k)
+	if err != nil {
 		o.ps.err = err
+		return o
 	}
+	o.v = v
 	return o
 }
 

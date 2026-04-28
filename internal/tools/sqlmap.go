@@ -36,9 +36,9 @@ func (s *SQLMap) Options() []mcp.ToolOption {
 func (s *SQLMap) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	url := ps.String("url", "").TrimSpace().NotEmpty().Parse()
-	data := ps.String("data", "").TrimSpace().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+	url := ps.String("url", "").Trim().NotEmpty().Parse()
+	data := ps.String("data", "").Trim().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		s.logger.Error("invalid parameters for sqlmap scan",

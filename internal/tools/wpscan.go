@@ -35,8 +35,8 @@ func (w *WPScan) Options() []mcp.ToolOption {
 func (w *WPScan) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	url := ps.String("url", "").TrimSpace().NotEmpty().Parse()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+	url := ps.String("url", "").Trim().NotEmpty().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	if err := ps.Err(); err != nil {
 		w.logger.Error("invalid parameters for wpscan analyze",

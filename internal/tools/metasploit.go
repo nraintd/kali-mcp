@@ -41,7 +41,7 @@ func (m *MetasploitModuleInfo) Options() []mcp.ToolOption {
 func (m *MetasploitModuleInfo) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	module := ps.String("module", "").TrimSpace().NotEmpty().
+	module := ps.String("module", "").Trim().NotEmpty().
 		Validate(func(v, k string) error {
 			return validateMetasploitModule(v)
 		}).Parse()
@@ -98,7 +98,7 @@ func (m *Metasploit) Options() []mcp.ToolOption {
 func (m *Metasploit) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	module := ps.String("module", "").TrimSpace().NotEmpty().
+	module := ps.String("module", "").Trim().NotEmpty().
 		Validate(func(v, k string) error {
 			return validateMetasploitModule(v)
 		}).Parse()

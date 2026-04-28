@@ -41,15 +41,15 @@ func (h *Hydra) Options() []mcp.ToolOption {
 func (h *Hydra) Handler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ps := param.NewParams(req)
 
-	username := ps.String("username", "").TrimSpace().Parse()
-	usernameFile := ps.String("username_file", "").TrimSpace().Parse()
-	password := ps.String("password", "").TrimSpace().Parse()
-	passwordFile := ps.String("password_file", "").TrimSpace().Parse()
+	username := ps.String("username", "").Trim().Parse()
+	usernameFile := ps.String("username_file", "").Trim().Parse()
+	password := ps.String("password", "").Trim().Parse()
+	passwordFile := ps.String("password_file", "").Trim().Parse()
 
-	target := ps.String("target", "").TrimSpace().NotEmpty().Parse()
-	service := ps.String("service", "").TrimSpace().NotEmpty().Parse()
+	target := ps.String("target", "").Trim().NotEmpty().Parse()
+	service := ps.String("service", "").Trim().NotEmpty().Parse()
 	threads := ps.Int("threads", 4).Gt(0).ParseToString()
-	additionalArgs := ps.String("additional_args", "").TrimSpace().Parse()
+	additionalArgs := ps.String("additional_args", "").Trim().Parse()
 
 	ps. // username 与 username_file、password 与 password_file 互斥
 		MutuallyExclusive("username", "username_file").
